@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { COPY } from "../_lib/design";
-import { Letters } from "./Words";
+import { Typewriter } from "./Words";
 
 export default function Forget() {
   return (
@@ -12,7 +12,7 @@ export default function Forget() {
         viewport={{ once: true }}
         transition={{ type: "spring", stiffness: 120, damping: 10 }}
       >
-        <Letters text={COPY.forget} stagger={0.05} />
+        <Typewriter text={COPY.forget} step={0.07} whenInView />
       </motion.h2>
     </section>
   );

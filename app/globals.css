@@ -72,13 +72,15 @@ img { max-width: 100%; user-select: none; -webkit-user-drag: none; }
 .apple-wrap { z-index: 1; }
 .apple-idle { animation: breathe 3.2s ease-in-out infinite; }
 @keyframes breathe { 50% { transform: scale(1.025) rotate(0.6deg); } }
+.apple-wrap { filter: drop-shadow(0 10px 14px rgba(96, 16, 16, 0.18)); }
 .apple-half {
   position: absolute; left: 0; width: 100%;
   background: url("/images/apple.png") no-repeat; background-size: 100% auto;
-  filter: drop-shadow(0 10px 14px rgba(96, 16, 16, 0.18));
 }
-.apple-half.top { top: 0; height: 53.4%; background-position: top; }
-.apple-half.bottom { top: 53.6%; height: 46.4%; background-position: bottom; }
+/* the halves overlap a hair so no seam shows before the apple breaks */
+.apple-half.top { top: 0; height: 53.8%; background-position: top; }
+.apple-half.bottom { top: 53.4%; height: 46.6%; background-position: bottom; }
+.tw-caret { position: absolute; right: -0.03em; top: 0.14em; bottom: 0.1em; width: 0.05em; background: currentColor; border-radius: 1px; pointer-events: none; }
 .sticker-group { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .sticker-face { position: absolute; left: 16.2%; top: 41.2%; width: 59.6%; }
 .sticker-hat { position: absolute; left: 28%; top: 7.6%; width: 24.8%; }
@@ -106,7 +108,8 @@ img { max-width: 100%; user-select: none; -webkit-user-drag: none; }
 @media (min-width: 820px) { .kid { width: 36vw; margin-top: 3vw; } }
 .kid-img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; box-shadow: 0 14px 30px rgba(96, 16, 16, 0.18); }
 .kid-hat { position: absolute; left: 42.7%; top: -24.8%; width: 24.9%; }
-.hbd-right { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: min(80svh, 40rem); }
+.hbd-right { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; contain: layout; /* fixed height = the postcard's height, so swapping envelope <-> postcard never shifts the page */ height: calc(min(88vw, 56svh) * 1.5 + 5rem); }
+@media (min-width: 820px) { .hbd-right { height: calc(min(40vw, 58svh) * 1.5 + 5rem); } }
 .envelope { position: relative; width: 86vw; container-type: inline-size; }
 @media (min-width: 820px) { .envelope { width: 43vw; } }
 .env-wiggle { display: block; position: relative; animation: env-wiggle 3.6s ease-in-out infinite; }
@@ -163,7 +166,17 @@ img { max-width: 100%; user-select: none; -webkit-user-drag: none; }
 
 /* ---------- 4. memory jar ---------- */
 .mj { min-height: 100svh; display: flex; align-items: center; justify-content: center; padding: 1.5rem 0; overflow: hidden; }
-.mj-stage { position: relative; width: 100%; }
+.mj-stage { position: relative; width: 100%; container-type: inline-size; }
+.spark {
+  position: absolute; z-index: 9; pointer-events: none; opacity: 0; line-height: 1;
+  animation: spark var(--dur) ease-out var(--delay) infinite backwards;
+}
+@keyframes spark {
+  0% { transform: translate(0, 0) scale(0) rotate(0); opacity: 0; }
+  15% { opacity: 0.75; transform: translate(calc(var(--dx) * 0.15), calc(var(--dy) * 0.15)) scale(1) rotate(calc(var(--rot) * 0.15)); }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.5) rotate(var(--rot)); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .spark { display: none; } }
 @media (min-width: 820px) { .mj-stage { width: min(100vw, 154vh); } }
 .jar { position: absolute; z-index: 20; container-type: inline-size; display: block; }
 .jar img { display: block; width: 100%; }
@@ -177,23 +190,28 @@ img { max-width: 100%; user-select: none; -webkit-user-drag: none; }
 }
 .mem { position: absolute; }
 .mem-float, .mem-persp, .mem-flip { width: 100%; height: 100%; }
-.mem-persp { perspective: 1100px; cursor: pointer; }
+.mem-persp { perspective: 1100px; cursor: pointer; container-type: inline-size; }
 .mem-flip { position: relative; transform-style: preserve-3d; }
 .mem-face {
-  position: absolute; inset: 0; overflow: hidden; border-radius: 10px;
+  position: absolute; inset: 0; overflow: hidden; border-radius: 12cqw;
   backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  box-shadow: 0 10px 22px rgba(60, 20, 20, 0.25);
+  box-shadow: 0 10px 22px rgba(60, 20, 20, 0.22);
 }
 .mem-front { background: #fff; }
 .mem-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* pink card, white border, heart on top, white caps - like the Figma "Frame 3" */
 .mem-back {
-  transform: rotateY(180deg); background: var(--paper); border: 4px solid var(--pink);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 0.6rem; padding: 8%; text-align: center; color: var(--maroon);
+  transform: rotateY(180deg); background: #ff9ec7; border: max(2px, 1.4cqw) solid #fff;
+  display: flex; align-items: center; justify-content: center;
+  padding: 22cqw 10cqw 10cqw; text-align: center; color: #fff;
 }
-.mem-back p { font-size: clamp(0.85rem, 1.7vw, 1.6rem); line-height: 1.2; }
-.mem-tag { font-size: clamp(0.6rem, 0.9vw, 0.85rem); color: var(--rose); }
-.mem-star { color: var(--rose); font-size: 1.2rem; }
+.mem-back p.mem-long { font-size: 6.6cqw; }
+/* wide (landscape) cards: heart on the left, caption on the right, so nothing collides */
+.mem-back.mem-wide { flex-direction: row; gap: 6cqw; padding: 8cqw 9cqw; }
+.mem-wide .mem-heart { position: static; translate: none; flex: none; width: 17cqw; height: 17cqw; }
+.mem-wide p, .mem-wide p.mem-long { font-size: 5.4cqw; line-height: 1.2; text-align: left; }
+.mem-back p { font-size: 8.4cqw; line-height: 1.15; text-transform: uppercase; text-wrap: balance; }
+.mem-heart { position: absolute; top: 9cqw; left: 50%; width: 11cqw; height: 11cqw; translate: -50% 0; }
 
 /* ---------- 5. and how can we forget ---------- */
 .forget { min-height: 100svh; display: flex; align-items: center; justify-content: center; padding: 2rem 6vw; text-align: center; }

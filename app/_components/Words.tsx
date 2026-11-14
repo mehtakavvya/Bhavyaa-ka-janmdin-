@@ -1,5 +1,6 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 
 /** Words that spring up out of a mask, one after another. Use inside AnimatePresence to get exit too. */
 export function Words({
@@ -31,6 +32,72 @@ export function Words({
         </span>
       ))}
     </span>
+  );
+}
+
+/** Types itself out letter by letter with a little caret. Every letter still jiggles on hover. */
+export function Typewriter({
+  text,
+  className,
+  delay = 0,
+  step = 0.05,
+  whenInView = false,
+}: {
+  text: string;
+  className?: string;
+  delay?: number;
+  step?: number;
+  whenInView?: boolean;
+}) {
+  const words = text.split(" ");
+  const total = [...text].length;
+  const ref = useRef<HTMLSpanElement>(null);
+  const seen = useInView(ref, { once: true, margin: "-12% 0px" });
+  const go = !whenInView || seen;
+  let n = 0;
+  return (
+    <span ref={ref} className={className} aria-label={text}>
+      {words.map((w, wi) => (
+        <span key={wi} aria-hidden>
+          <span style={{ display: "inline-block", whiteSpace: "nowrap" }}>
+            {[...w].map((ch) => {
+              const idx = n++;
+              return <TypeChar key={idx} ch={ch} idx={idx} at={delay + idx * step} step={step} last={idx === total - 1} go={go} />;
+            })}
+          </span>
+          {wi < words.length - 1 ? (n++, " ") : ""}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function TypeChar({ ch, idx, at, step, last, go }: { ch: string; idx: number; at: number; step: number; last: boolean; go: boolean }) {
+  return (
+    <motion.span
+      style={{ display: "inline-block", position: "relative" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: go ? 1 : 0 }}
+      transition={{ duration: 0.01, delay: at }}
+    >
+      <motion.span
+        style={{ display: "inline-block" }}
+        whileHover={{ y: -10, rotate: idx % 2 ? -7 : 7, transition: { type: "spring", stiffness: 500, damping: 10 } }}
+      >
+        {ch}
+      </motion.span>
+      <motion.span
+        className="tw-caret"
+        aria-hidden
+        initial={{ opacity: 0 }}
+        animate={go ? { opacity: last ? [0, 1, 1, 0, 1, 1, 0] : [0, 1, 1, 0] } : { opacity: 0 }}
+        transition={
+          last
+            ? { delay: at, duration: 1.8, times: [0, 0.03, 0.3, 0.35, 0.4, 0.9, 1] }
+            : { delay: at, duration: step, times: [0, 0.05, 0.95, 1] }
+        }
+      />
+    </motion.span>
   );
 }
 

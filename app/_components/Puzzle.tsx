@@ -164,7 +164,7 @@ export default function Puzzle() {
             transition={{ type: "spring", stiffness: 140, damping: 12 }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/polaroid.webp" alt="the photo to rebuild" draggable={false} />
+            <img src="/images/polaroid-clean.webp" alt="the photo to rebuild" draggable={false} />
             <span className="pz-ref-text">{COPY.puzzle.ref}</span>
           </motion.div>
           <div ref={trayRef} className="pz-tray" />

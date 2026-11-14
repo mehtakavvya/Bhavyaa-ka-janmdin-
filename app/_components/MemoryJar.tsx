@@ -2,6 +2,7 @@
 import { motion, useAnimationControls } from "framer-motion";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { COPY, FRAME, JAR, MEMORIES, type Memory } from "../_lib/design";
+import { mulberry32 } from "../_lib/rng";
 
 type Box = { l: number; t: number; w: number; ar: number }; // all in "units": stage width = 100
 
@@ -103,6 +104,8 @@ export default function MemoryJar() {
           {open ? "tap the jar to tuck them back in" : isMobile ? "tap the jar ↑" : "tap the jar ↓"}
         </motion.p>
 
+        {open && <Sparkles x={jarCx} H={L.H} jarCy={jarCy} />}
+
         {MEMORIES.map((m, i) => (
           <MemoryCard
             key={m.src}
@@ -117,6 +120,53 @@ export default function MemoryJar() {
         ))}
       </div>
     </section>
+  );
+}
+
+/** A few small pink stars and hearts that drift out of the jar. Very subtle. */
+function Sparkles({ x, H, jarCy }: { x: number; H: number; jarCy: number }) {
+  const [items] = useState(() => {
+    const rng = mulberry32(2024);
+    return Array.from({ length: 16 }, (_, i) => {
+      const a = rng() * Math.PI * 2;
+      const d = 14 + rng() * 32;
+      return {
+        star: i % 2 === 0,
+        size: 0.9 + rng() * 1.2,
+        dx: Math.cos(a) * d,
+        dy: Math.sin(a) * d * 0.75,
+        rot: (rng() - 0.5) * 120,
+        dur: 4.5 + rng() * 3.5,
+        delay: rng() * 5,
+        color: ["#f7b5d1", "#ff9ec7", "#df6190", "#fbc9de"][i % 4],
+      };
+    });
+  });
+  return (
+    <>
+      {items.map((s, k) => (
+        <span
+          key={k}
+          className="spark"
+          aria-hidden
+          style={
+            {
+              left: `${x}%`,
+              top: `${(jarCy / H) * 100}%`,
+              fontSize: `${s.size * 2.2}cqw`,
+              color: s.color,
+              ["--dx" as string]: `${s.dx}cqw`,
+              ["--dy" as string]: `${s.dy}cqw`,
+              ["--rot" as string]: `${s.rot}deg`,
+              ["--dur" as string]: `${s.dur}s`,
+              ["--delay" as string]: `${s.delay}s`,
+            } as React.CSSProperties
+          }
+        >
+          {s.star ? "✦" : "♥"}
+        </span>
+      ))}
+    </>
   );
 }
 
@@ -182,12 +232,11 @@ function MemoryCard({ m, i, box, H, open, dx, dy }: { m: Memory; i: number; box:
                 <img src={m.src} alt={m.caption} draggable={false} className="mem-img" />
               )}
             </div>
-            <div className="mem-face mem-back">
-              <span className="mem-tag">memory #{i + 1}</span>
-              <p>{m.caption}</p>
-              <span className="mem-star" aria-hidden>
-                ✦
-              </span>
+            <div className={box.ar > 1.2 ? "mem-face mem-back mem-wide" : "mem-face mem-back"}>
+              <svg className="mem-heart" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinejoin="round" aria-hidden>
+                <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2Z" />
+              </svg>
+              <p className={m.caption.length > 55 ? "mem-long" : undefined}>{m.caption}</p>
             </div>
           </motion.div>
         </div>

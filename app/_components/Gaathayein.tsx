@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { COPY, SPRING } from "../_lib/design";
-import { Letters } from "./Words";
+import { Typewriter } from "./Words";
 
 export default function Gaathayein() {
   return (
@@ -19,7 +19,12 @@ export default function Gaathayein() {
           <h2 className="gp-title">
             {COPY.gaath.title.map((word, i) => (
               <span key={word} className="gp-line">
-                <Letters text={word} delay={0.25 + i * 0.3} />
+                <Typewriter
+                  text={word}
+                  step={0.06}
+                  whenInView
+                  delay={0.3 + COPY.gaath.title.slice(0, i).reduce((n, w) => n + [...w].length, 0) * 0.06 + i * 0.15}
+                />
               </span>
             ))}
           </h2>

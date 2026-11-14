@@ -3,7 +3,7 @@ import { AnimatePresence, backOut, motion, useMotionValueEvent, useScroll, useTr
 import { useEffect, useRef, useState } from "react";
 import { useLayerConfetti } from "../_lib/confetti";
 import { COPY, SPRING } from "../_lib/design";
-import { Words } from "./Words";
+import { Typewriter } from "./Words";
 
 const amp = (v: number) => (v < 0.17 ? v / 0.17 : Math.max(0, (0.23 - v) / 0.06));
 
@@ -38,7 +38,7 @@ export default function Hero() {
   };
 
   const update = (v: number) => {
-    const next = v > 0.82 ? 4 : v > 0.62 ? 3 : v > 0.52 ? 2 : v > 0.4 ? 1 : 0;
+    const next = v > 0.82 ? 4 : v > 0.62 ? 3 : v > 0.42 ? 2 : v > 0.28 ? 1 : 0;
     const prev = phaseRef.current;
     if (next === prev) return;
     phaseRef.current = next;
@@ -74,7 +74,7 @@ export default function Hero() {
               className="sticker-face"
               initial={{ scale: 0, rotate: -14, y: 40, opacity: 0 }}
               animate={phase >= 1 ? { scale: 1, rotate: 0, y: 0, opacity: 1 } : { scale: 0, rotate: -14, y: 40, opacity: 0 }}
-              transition={SPRING.bouncy}
+              transition={{ type: "spring", stiffness: 320, damping: 17 }}
             />
             <motion.div
               className="sticker-hat"
@@ -104,12 +104,12 @@ export default function Hero() {
           <AnimatePresence mode="wait">
             {phase === 3 && (
               <motion.p key="l1" exit={{ opacity: 0 }}>
-                <Words text={COPY.hero.line1} />
+                <Typewriter text={COPY.hero.line1} step={0.06} />
               </motion.p>
             )}
             {phase === 4 && (
               <motion.p key="l2" exit={{ opacity: 0 }}>
-                <Words text={COPY.hero.line2} stagger={0.06} />
+                <Typewriter text={COPY.hero.line2} step={0.04} />
               </motion.p>
             )}
           </AnimatePresence>

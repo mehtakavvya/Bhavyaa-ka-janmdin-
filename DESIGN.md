@@ -62,8 +62,8 @@ Springs live in `SPRING` in `design.ts`: `bouncy` (pops), `soft` (slides), `snap
 |---|---|
 | 0 – 0.2 | apple shakes, very subtly, getting stronger |
 | 0.2 – 0.4 | apple breaks into two halves |
-| 0.4 | Bhavyaa's sticker pops up between the halves |
-| 0.52 | party hat drops on, confetti blows from behind the sticker |
+| 0.28 | Bhavyaa's sticker pops up between the halves (while they're still opening) |
+| 0.42 | party hat drops on, confetti blows from behind the sticker |
 | 0.62 | "To the apple of my EYE" |
 | 0.82 | "and my favourite unpaid source of entertainment.." + second confetti |
 
@@ -101,7 +101,7 @@ Other motion: letters bounce in on scroll and jiggle on hover; envelope wiggles 
 
 ## Gaathayein notes
 
-`/gaathayein` — Notes-style page. Notes auto-save to the browser's `localStorage` (key `bhavyaa-gaathayein-v1`), so they come back next visit **on the same phone/laptop**. They do not sync between devices.
+`/gaathayein` — Notes-style page. Notes are **shared by everyone**: they save to the server through `/api/notes` (`app/api/notes/route.ts`, storage in `app/_lib/notesStore.ts`) and the page refreshes every 5 s. Local dev uses `.data/notes.json`; online it needs Supabase — see `SETUP-SHARED-NOTES.md`.
 
 ## Assets (`public/images`)
 

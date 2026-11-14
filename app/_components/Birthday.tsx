@@ -1,5 +1,5 @@
 "use client";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { burst } from "../_lib/confetti";
 import { COPY, SPRING } from "../_lib/design";
@@ -10,7 +10,10 @@ type Stage = "closed" | "opening" | "open";
 export default function Birthday() {
   const [stage, setStage] = useState<Stage>("closed");
   const timer = useRef<number | undefined>(undefined);
+  const rightRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(rightRef, { once: true, margin: "-10% 0px" });
   useEffect(() => () => window.clearTimeout(timer.current), []);
+
 
   function openEnvelope(e: React.MouseEvent) {
     if (stage !== "closed") return;
@@ -58,8 +61,8 @@ export default function Birthday() {
         <Letters text={COPY.birthday.bottom} className="hbd-title" delay={0.2} />
       </div>
 
-      <div className="hbd-right">
-        <AnimatePresence mode="wait">
+      <div className="hbd-right" ref={rightRef}>
+        <AnimatePresence mode="popLayout">
           {stage !== "open" ? (
             <motion.button
               key="envelope"
@@ -67,14 +70,18 @@ export default function Birthday() {
               className="envelope"
               onClick={openEnvelope}
               aria-label={COPY.birthday.tap}
-              initial={{ opacity: 0, y: 60, scale: 0.8, rotate: 4 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
-              viewport={{ once: true, margin: "-10% 0px" }}
-              animate={stage === "opening" ? { rotate: [0, -5, 5, -4, 4, 0], scale: [1, 1.06, 1.06, 1.03, 1.06, 1.1] } : undefined}
-              exit={{ y: 70, opacity: 0, scale: 0.8, rotate: 6, transition: { duration: 0.35 } }}
+              initial={{ opacity: 0, y: 40, scale: 0.85, rotate: 4 }}
+              animate={
+                stage === "opening"
+                  ? { opacity: 1, y: 0, rotate: [0, -5, 5, -4, 4, 0], scale: [1, 1.06, 1.06, 1.03, 1.06, 1.1] }
+                  : inView
+                    ? { opacity: 1, y: 0, scale: 1, rotate: 0 }
+                    : { opacity: 0, y: 40, scale: 0.85, rotate: 4 }
+              }
+              exit={{ y: 40, opacity: 0, scale: 0.85, transition: { duration: 0.15 } }}
               whileHover={stage === "closed" ? { y: -8, rotate: -1.5 } : undefined}
               whileTap={{ scale: 0.96 }}
-              transition={stage === "opening" ? { duration: 0.7 } : SPRING.bouncy}
+              transition={stage === "opening" ? { duration: 0.7 } : { type: "spring", stiffness: 260, damping: 15 }}
             >
               <span className="env-wiggle">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -91,14 +98,15 @@ export default function Birthday() {
   );
 }
 
-function Postcard({ onClose }: { onClose: () => void }) {
+function Postcard({ onClose, ref }: { onClose: () => void; ref?: React.Ref<HTMLDivElement> }) {
   return (
     <motion.div
+      ref={ref}
       className="postcard-wrap"
-      initial={{ opacity: 0, y: 80, scale: 0.5, rotate: -8 }}
-      animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
-      exit={{ opacity: 0, y: 60, scale: 0.7, transition: { duration: 0.3 } }}
-      transition={{ type: "spring", stiffness: 110, damping: 14 }}
+      initial={{ opacity: 0, y: 24, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 24, scale: 0.9, transition: { duration: 0.15 } }}
+      transition={{ type: "spring", stiffness: 160, damping: 22 }}
     >
       <div className="postcard" style={{ perspective: 1400 }}>
         <motion.div
@@ -106,7 +114,7 @@ function Postcard({ onClose }: { onClose: () => void }) {
           style={{ transformOrigin: "50% 100%" }}
           initial={{ rotateX: 92 }}
           animate={{ rotateX: 0 }}
-          transition={{ delay: 0.45, type: "spring", stiffness: 70, damping: 10 }}
+          transition={{ delay: 0.45, type: "spring", stiffness: 60, damping: 16 }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/images/postcard-top.jpg" alt="" draggable={false} />
