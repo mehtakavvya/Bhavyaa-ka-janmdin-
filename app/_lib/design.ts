@@ -46,6 +46,21 @@ export const COPY = {
   gaath: { title: ["BHAVYAA", "KI", "GAATHAYEIN"], cta: "click here to access" },
 } as const;
 
+/** The notes on the /gaathayein page. Edit, add or remove lines here. */
+export const GAATH_NOTES: readonly string[] = [
+  "Not every talking stage is as fast as usain bolt, someone's gotta be the ",
+  "O stree kal aana",
+  "She's as virgin as olive oil",
+  "If you can't ride anything does that mean you're gonna ride the engine.",
+  "Bro is preparing for an interview but he can re-watch a whole series for you.",
+  "Punctured tire- ear",
+  "My standards are as high as my blood pressure",
+  "Loveria",
+  "You are not as amavas",
+  "You should have knee pain, tumhara dimaag tumhare ghutno mei hai",
+  "Mereko lagta hai mai jitna anuv jain ke gaane sunungi itni bauni reh jaungi",
+];
+
 export const PUZZLE = {
   cols: 6,
   rows: 6,

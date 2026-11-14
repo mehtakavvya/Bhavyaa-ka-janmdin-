@@ -101,7 +101,7 @@ Other motion: letters bounce in on scroll and jiggle on hover; envelope wiggles 
 
 ## Gaathayein notes
 
-`/gaathayein` — Notes-style page. Notes are **shared by everyone**: they save to the server through `/api/notes` (`app/api/notes/route.ts`, storage in `app/_lib/notesStore.ts`) and the page refreshes every 5 s. Local dev uses `.data/notes.json`; online it needs Supabase — see `SETUP-SHARED-NOTES.md`.
+`/gaathayein` — read-only wall of pink cards (`#ff9ec7`, white border, white text), not clickable. The text is hard-coded in `GAATH_NOTES` in `app/_lib/design.ts`: edit, add or remove lines there. No database or server needed.
 
 ## Assets (`public/images`)
 
